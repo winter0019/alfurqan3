@@ -16,17 +16,17 @@ def get_db():
     return g.db
 
 def init_db():
-    """Initializes the database from the schema file."""
+    """Initializes the database using schema.sql."""
     db = get_db()
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
     db.commit()
 
 def create_app(test_config=None):
-    """The Flask app factory function."""
+    """The Flask application factory."""
     app = Flask(__name__, instance_relative_config=True)
 
-    # Config
+    # Default config
     app.config.from_mapping(
         SECRET_KEY=os.environ.get('SECRET_KEY', 'dev'),
         DATABASE=os.path.join(app.instance_path, 'alfurqa_academy.db'),
@@ -36,6 +36,7 @@ def create_app(test_config=None):
     if test_config:
         app.config.update(test_config)
     else:
+        # Load the instance config, if it exists
         app.config.from_pyfile('config.py', silent=True)
 
     # Ensure instance folder exists
@@ -44,15 +45,22 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # Initialize Flask extensions
+    # Initialize extensions
     bcrypt.init_app(app)
     csrf.init_app(app)
 
-    # Register blueprint
+    # Register blueprints
     from .routes import main_bp
     app.register_blueprint(main_bp)
 
-    # Teardown database connection
+    # Add CLI command to init DB
+    @app.cli.command('init-db')
+    def init_db_command():
+        """Clear existing data and create new tables."""
+        init_db()
+        print('Initialized the database.')
+
+    # Close DB on teardown
     @app.teardown_appcontext
     def close_db(error=None):
         db = g.pop('db', None)
