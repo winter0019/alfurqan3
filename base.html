@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alfurqan Academy Mai'adua</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    </head>
+<body>
+    <header class="main-header">
+        <div class="logo-and-title">
+            <img src="{{ url_for('static', filename='images/alfurqan_logo.jpeg') }}" alt="Alfurqan Academy Logo" class="school-logo">
+            <h1>Alfurqan Academy Mai'adua</h1>
+        </div>
+        <nav>
+            {% if session.username %}
+                <ul>
+                    <li><a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}class="active"{% endif %}>Home</a></li>
+                    <li><a href="{{ url_for('register_student') }}" {% if request.endpoint == 'register_student' %}class="active"{% endif %}>Register Student</a></li>
+                    <li><a href="{{ url_for('student_list') }}" {% if request.endpoint == 'student_list' %}class="active"{% endif %}>View All Students</a></li>
+                    {% if session.role == 'admin' %}
+                        <li><a href="{{ url_for('create_user') }}" {% if request.endpoint == 'create_user' %}class="active"{% endif %}>Create User</a></li>
+                        <li><a href="{{ url_for('admin_dashboard') }}" {% if request.endpoint == 'admin_dashboard' %}class="active"{% endif %}>Admin Dashboard</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('logout') }}">Logout ({{ session.username }})</a></li>
+                </ul>
+            {% endif %}
+        </nav>
+    </header>
+    <main class="container"> {# Added .container class here #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes {{ category|d('info') }}"> {# Added class based on category #}
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; {{ now.year }} Alfurqan Academy Mai'adua. All rights reserved.</p>
+    </footer>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

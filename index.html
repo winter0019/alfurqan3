@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="details-card"> {# Reusing details-card for a structured welcome #}
+    <h2>Welcome, {{ session.username }}!</h2>
+    <p>This is your dashboard. Use the navigation above to manage students, fees, and users.</p>
+
+    <h3>Quick Links:</h3>
+    <div class="quick-links" style="display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px;">
+        <a href="{{ url_for('register_student') }}" class="btn btn-primary">Register New Student</a>
+        <a href="{{ url_for('student_list') }}" class="btn btn-secondary">View All Students</a>
+        {% if session.role == 'admin' %}
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-success">Admin Dashboard</a>
+            <a href="{{ url_for('create_user') }}" class="btn btn-info" style="background-color: var(--info-text); color: var(--text-light);">Create User</a>
+        {% endif %}
+    </div>
+
+    {# You can add a small "recent activity" or summary here later if desired #}
+</div>
+{% endblock %}
