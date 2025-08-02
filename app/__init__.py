@@ -1,31 +1,37 @@
-from flask import Flask
-from flask_wtf.csrf import CSRFProtect
-from .db import init_db  # Make sure this exists
+# ... existing imports
+from flask.cli import with_appcontext
+import click
 
-csrf = CSRFProtect()
+# ... rest of your code (create_app, get_db, etc.)
 
-def create_app():
-    app = Flask(__name__)
-    app.config.from_object("config.Config")
+@click.command('init-db')
+@with_appcontext
+def init_db_command():
+    """Clear existing data and create new tables."""
+    init_db()
+    click.echo('Initialized the database.')
 
+def create_app(test_config=None):
+    app = Flask(__name__, instance_relative_config=True)
+
+    # ... your config code
+
+    # Initialize extensions
+    bcrypt.init_app(app)
     csrf.init_app(app)
 
-    # Import and register blueprints
-    from .views.auth import auth_bp
-    from .views.admin import admin_bp
-    from .views.exam import exam_bp
+    # Register blueprints
+    from .routes import main_bp
+    app.register_blueprint(main_bp)
 
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(admin_bp)
-    app.register_blueprint(exam_bp)
+    # Register CLI commands
+    app.cli.add_command(init_db_command)
 
-    # Add CLI command
-    import click
-
-    @app.cli.command("init-db")
-    def init_db_command():
-        """Clear existing data and create new tables."""
-        init_db()
-        click.echo("✅ Initialized the database.")
+    # DB teardown
+    @app.teardown_appcontext
+    def close_db(error=None):
+        db = g.pop('db', None)
+        if db is not None:
+            db.close()
 
     return app
