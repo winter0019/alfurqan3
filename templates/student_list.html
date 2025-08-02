@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>All Registered Students</h2>
+
+    <form method="GET" class="filter-form" style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
+        <div class="form-group" style="flex: 1; min-width: 200px;">
+            <label for="search">Search (Name/Reg No/Guardian):</label>
+            <input type="text" id="search" name="search" value="{{ search_query }}">
+        </div>
+        <div class="form-group" style="flex: 0 0 150px;">
+            <label for="class">Class:</label>
+            <select id="class" name="class">
+                <option value="">All</option>
+                {% for c in classes %}
+                    <option value="{{ c }}" {% if c == selected_class %}selected{% endif %}>{{ c }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group" style="flex: 0 0 150px;">
+            <label for="term">Term:</label>
+            <select id="term" name="term">
+                <option value="">All</option>
+                {% for t in terms %}
+                    <option value="{{ t }}" {% if t == selected_term %}selected{% endif %}>{{ t }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group" style="flex: 0 0 150px;">
+            <label for="fee_status">Fee Status:</label>
+            <select id="fee_status" name="fee_status">
+                <option value="">All</option>
+                {% for status in fee_statuses %}
+                    <option value="{{ status }}" {% if status == selected_fee_status %}selected{% endif %}>{{ status }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="display: flex; align-items: flex-end; gap: 10px;">
+            <button type="submit" class="btn btn-primary">Apply Filters</button>
+            <a href="{{ url_for('student_list') }}" class="btn btn-secondary">Clear Filters</a>
+        </div>
+    </form>
+
+    {% if students %}
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>REG. NO.</th>
+                        <th>NAME</th>
+                        <th>CLASS</th>
+                        <th>CURRENT TERM</th>
+                        <th>ACADEMIC YEAR</th>
+                        <th>FEE STATUS</th>
+                        <th>OUTSTANDING (₦)</th>
+                        <th>ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ student.reg_no }}</td>
+                        <td>{{ student.name }}</td>
+                        <td>{{ student.class }}</td>
+                        <td>{{ student.term }}</td>
+                        <td>{{ student.academic_year }}</td>
+                        <td><span class="status-badge {{ student.fee_status_display.replace(' ', '') }}">{{ student.fee_status_display }}</span></td>
+                        <td>₦{{ student.outstanding_fee | format_currency }}</td>
+                        <td>
+                            <a href="{{ url_for('student_details', student_id=student.id) }}" class="btn btn-info" style="padding: 8px 15px; font-size: 0.85em; background-color: #17a2b8;">View Details</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No students found matching your criteria.</p>
+    {% endif %}
+{% endblock %}
+

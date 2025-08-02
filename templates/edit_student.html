@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Edit Student: {{ student.name }}</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="reg_no">Registration Number:</label>
+            <input type="text" id="reg_no" name="reg_no" value="{{ student.reg_no }}" required>
+        </div>
+        <div class="form-group">
+            <label for="name">Student Name:</label>
+            <input type="text" id="name" name="name" value="{{ student.name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="date_of_birth">Date of Birth:</label>
+            <input type="date" id="date_of_birth" name="date_of_birth" value="{{ student.date_of_birth }}">
+        </div>
+        <div class="form-group">
+            <label for="class">Class:</label>
+            <select id="class" name="class" required>
+                <option value="Nursery 1" {% if student.class == 'Nursery 1' %}selected{% endif %}>Nursery 1</option>
+                <option value="Nursery 2" {% if student.class == 'Nursery 2' %}selected{% endif %}>Nursery 2</option>
+                <option value="Nursery 3" {% if student.class == 'Nursery 3' %}selected{% endif %}>Nursery 3</option>
+                <option value="Primary 1" {% if student.class == 'Primary 1' %}selected{% endif %}>Primary 1</option>
+                <option value="Primary 2" {% if student.class == 'Primary 2' %}selected{% endif %}>Primary 2</option>
+                <option value="Primary 3" {% if student.class == 'Primary 3' %}selected{% endif %}>Primary 3</option>
+                <option value="Primary 4" {% if student.class == 'Primary 4' %}selected{% endif %}>Primary 4</option>
+                <option value="Primary 5" {% if student.class == 'Primary 5' %}selected{% endif %}>Primary 5</option>
+                <option value="Primary 6" {% if student.class == 'Primary 6' %}selected{% endif %}>Primary 6</option>
+                <option value="JSS 1" {% if student.class == 'JSS 1' %}selected{% endif %}>JSS 1</option>
+                <option value="JSS 2" {% if student.class == 'JSS 2' %}selected{% endif %}>JSS 2</option>
+                <option value="JSS 3" {% if student.class == 'JSS 3' %}selected{% endif %}>JSS 3</option>
+                <option value="SS 1" {% if student.class == 'SS 1' %}selected{% endif %}>SS 1</option>
+                <option value="SS 2" {% if student.class == 'SS 2' %}selected{% endif %}>SS 2</option>
+                <option value="SS 3" {% if student.class == 'SS 3' %}selected{% endif %}>SS 3</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="term">Term:</label>
+            <select id="term" name="term" required>
+                <option value="First Term" {% if student.term == 'First Term' %}selected{% endif %}>First Term</option>
+                <option value="Second Term" {% if student.term == 'Second Term' %}selected{% endif %}>Second Term</option>
+                <option value="Third Term" {% if student.term == 'Third Term' %}selected{% endif %}>Third Term</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="academic_year">Academic Year:</label>
+            <input type="text" id="academic_year" name="academic_year" value="{{ student.academic_year }}" placeholder="e.g., 2024/2025" required>
+        </div>
+        <div class="form-group">
+            <label for="guardian_name">Guardian Name:</label>
+            <input type="text" id="guardian_name" name="guardian_name" value="{{ student.guardian_name | d('') }}">
+        </div>
+        <div class="form-group">
+            <label for="guardian_phone">Guardian Phone:</label>
+            <input type="text" id="guardian_phone" name="guardian_phone" value="{{ student.guardian_phone | d('') }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Update Student</button>
+        <a href="{{ url_for('student_details', student_id=student.id) }}" class="btn btn-secondary">Cancel</a>
+    </form>
+{% endblock %}

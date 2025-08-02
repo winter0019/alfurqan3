@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Record Payment for {{ student.name }}</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="term_academic_year">Select Term & Academic Year:</label>
+            <select id="term_academic_year" name="term_academic_year" required onchange="updateAmountField()">
+                <option value="">-- Select Term --</option>
+                {% for entry in terms_with_outstanding %}
+                    <option value="{{ entry.term }}|{{ entry.academic_year }}" data-outstanding="{{ entry.outstanding }}">
+                        {{ entry.term }} {{ entry.academic_year }} (Outstanding: ₦{{ entry.outstanding | format_currency }})
+                    </option>
+                {% endfor %}
+            </select>
+            <input type="hidden" id="term" name="term">
+            <input type="hidden" id="academic_year" name="academic_year">
+        </div>
+        <div class="form-group">
+            <label for="amount_paid">Amount Paid (₦):</label>
+            <input type="number" id="amount_paid" name="amount_paid" step="0.01" min="0" required>
+            <small style="color: var(--secondary-color);">Enter amount for the selected term. Max: <span id="max_amount_display">0.00</span></small>
+        </div>
+        <button type="submit" class="btn btn-primary">Record Payment</button>
+        <a href="{{ url_for('student_details', student_id=student.id) }}" class="btn btn-secondary">Cancel</a>
+    </form>
+
+    <script>
+        function updateAmountField() {
+            var select = document.getElementById('term_academic_year');
+            var selectedOption = select.options[select.selectedIndex];
+            var termInput = document.getElementById('term');
+            var yearInput = document.getElementById('academic_year');
+            var amountInput = document.getElementById('amount_paid');
+            var maxAmountDisplay = document.getElementById('max_amount_display');
+
+            if (selectedOption.value) {
+                var parts = selectedOption.value.split('|');
+                termInput.value = parts[0];
+                yearInput.value = parts[1];
+                var outstanding = parseFloat(selectedOption.getAttribute('data-outstanding'));
+                amountInput.max = outstanding;
+                amountInput.value = Math.min(amountInput.value || outstanding, outstanding); // Set value to outstanding if empty or greater
+                maxAmountDisplay.textContent = outstanding.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            } else {
+                termInput.value = '';
+                yearInput.value = '';
+                amountInput.max = null;
+                amountInput.value = '';
+                maxAmountDisplay.textContent = '0.00';
+            }
+        }
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', updateAmountField);
+    </script>
+{% endblock %}
+

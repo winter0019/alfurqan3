@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Record Payment for {{ student.name }}{% endblock %}
+
+{% block content %}
+    <h2>Record Payment for {{ student.name }} (Reg. No.: {{ student.reg_number }})</h2>
+
+    <form method="POST" action="{{ url_for('make_payment', reg_number=student.reg_number) }}">
+        <div>
+            <label for="amount_paid">Amount Paid (₦):</label>
+            <input type="number" id="amount_paid" name="amount_paid" required step="0.01" min="0" placeholder="e.g., 50000.00">
+        </div>
+        <div>
+            <label for="term">For Term:</label>
+            <select id="term" name="term" required>
+                {% for t in terms %}
+                <option value="{{ t }}" {% if t == pre_selected_term %}selected{% endif %}>{{ t }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="academic_year">For Academic Year:</label>
+            <select id="academic_year" name="academic_year" required>
+                {% for year in academic_years %}
+                <option value="{{ year }}" {% if year == pre_selected_academic_year %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="recorded_by">Recorded By (Optional):</label>
+            <input type="text" id="recorded_by" name="recorded_by" placeholder="e.g., John Doe">
+        </div>
+        <button type="submit">Record Payment</button>
+    </form>
+
+    <p><a href="{{ url_for('student_details', reg_number=student.reg_number) }}">Back to Student Details</a></p>
+{% endblock %}
