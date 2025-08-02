@@ -57,3 +57,6 @@ def create_app():
         return 'Hello, Flask is working!'
 
     return app
+
+# --- Required for Flask CLI to detect the app ---
+app = create_app()
