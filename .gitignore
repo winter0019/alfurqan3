@@ -1,0 +1,7 @@
+venv/
+*.pyc
+__pycache__/
+.env
+database.db
+*.sqlite3
+instance/ # If your database.db is inside an 'instance' folder
